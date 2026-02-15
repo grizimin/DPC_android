@@ -7,6 +7,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RadioGroup;
 import android.view.MenuItem;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -19,6 +20,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.textfield.TextInputEditText;
+import com.google.android.material.textfield.TextInputLayout;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -41,15 +44,27 @@ public class LocalHostConnectionActivity extends AppCompatActivity {
         }
 
         FloatingActionButton nextFab = (FloatingActionButton) findViewById(R.id.nextFab);
+        TextInputLayout ipInput = (TextInputLayout) findViewById(R.id.ipInput);
+        TextInputEditText linkInput = (TextInputEditText) findViewById(R.id.linkInput);
+        TextView errorTextView = (TextView) findViewById(R.id.errorTextView);
+
         DPC dpc = (DPC) this.getApplication();
         nextFab.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
+                String ip = String.valueOf(linkInput.getText());
+
+                if (ip.isEmpty()) {
+                    errorTextView.setText("Please, enter the ip");
+                    return;
+                }
+
                 URI uri;
                 try {
-                    uri = new URI("ws://10.0.2.2:8765");
+                    uri = new URI("ws://" + ip);
                 }
                 catch (URISyntaxException e) {
+                    errorTextView.setText("IP is not valid");
                     Log.i("ControllerActivity", "Failed to build URI");
                     return;
                 }
