@@ -8,6 +8,7 @@ import android.widget.Button;
 import android.widget.RadioGroup;
 import android.view.MenuItem;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -68,9 +69,25 @@ public class LocalHostConnectionActivity extends AppCompatActivity {
                     Log.i("ControllerActivity", "Failed to build URI");
                     return;
                 }
-                dpc.globalHandler = new LocalHostHandler(uri);
                 Intent intent = new Intent(LocalHostConnectionActivity.this, ControllerActivity.class);
-                startActivity(intent);
+                dpc.globalHandler = new LocalHostHandler(uri, new IConnectionListener() {
+                    @Override
+                    public void onConnected() {
+                        startActivity(intent);
+                    }
+
+                    @Override
+                    public void onConnectionError() {
+                    }
+
+                    @Override
+                    public void onDisconnected() {
+                        Toast.makeText(LocalHostConnectionActivity.this, "Disconnected", Toast.LENGTH_SHORT).show();
+                        Intent intent = new Intent(LocalHostConnectionActivity.this, MainActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                        startActivity(intent);
+                    }
+                });
             }
         });
 
