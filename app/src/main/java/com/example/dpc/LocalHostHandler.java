@@ -10,22 +10,31 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 public class LocalHostHandler implements IConnectionHandler {
-    private final WebSocketClient webSocketClient;
+    private static final long CONNECTION_TIMEOUT_MS = 5000; // 5 seconds
+    private WebSocketClient webSocketClient;
     private boolean isConnected = false;
-    private final IConnectionListener listener;
+    private boolean hasTimedOut = false;
+    private IConnectionListener listener = null;
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
-    LocalHostHandler(URI uri, IConnectionListener listener) {
+    private final Handler timeoutHandler = new Handler(Looper.getMainLooper());
+    LocalHostHandler(URI uri, String password, IConnectionListener listener) {
         this.listener = listener;
         webSocketClient = new WebSocketClient(uri) {
             @Override
             public void onOpen(ServerHandshake serverHandshake) {
-                isConnected = true;
-                Log.i("LocalHostHandler", "Opened");
-                mainHandler.post(listener::onConnected);
+                if (hasTimedOut) return;
+                webSocketClient.send("AUTH " + password);
             }
             @Override
             public void onMessage(String s) {
                 Log.i("Websocket", "Received: " + s);
+
+                if (s.equals("OK")) {
+                    isConnected = true;
+                    Log.i("LocalHostHandler", "Opened");
+                    timeoutHandler.removeCallbacks(timeoutRunnable);
+                    mainHandler.post(listener::onConnected);
+                }
             }
 
             @Override
@@ -38,11 +47,28 @@ public class LocalHostHandler implements IConnectionHandler {
             @Override
             public void onError(Exception e) {
                 Log.i("Websocket", "Error " + e.getMessage());
+                timeoutHandler.removeCallbacks(timeoutRunnable);
                 mainHandler.post(listener::onConnectionError);
             }
         };
+
+
         webSocketClient.connect();
+        timeoutHandler.postDelayed(timeoutRunnable, CONNECTION_TIMEOUT_MS);
     }
+
+    private final Runnable timeoutRunnable = () -> {
+        if (!isConnected) {
+            hasTimedOut = true;
+            if (webSocketClient != null) {
+                webSocketClient.close();
+            }
+            if (listener != null) {
+                mainHandler.post(listener::onTimeout);
+            }
+        }
+    };
+
     private void sendMessage(String s) {
         if (isConnected) {
             webSocketClient.send(s);
@@ -67,5 +93,13 @@ public class LocalHostHandler implements IConnectionHandler {
     @Override
     public void button3() {
         sendMessage("3");
+    }
+
+    public void disconnect() {
+        try {
+            webSocketClient.close();
+        } catch (Exception e) {
+            Log.e("WebSocket", "Disconnect failed");
+        }
     }
 }

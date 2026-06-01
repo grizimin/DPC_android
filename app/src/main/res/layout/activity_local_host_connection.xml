@@ -13,18 +13,6 @@
         android:layout_height="wrap_content"
         app:layout_constraintTop_toTopOf="parent"/>
 
-
-    <TextView
-        android:id="@+id/errorTextView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toTopOf="@id/ipInput"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        android:text=""
-        android:textSize="15sp"
-        android:textColor="#ea3838"/>
-
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/ipInput"
         android:layout_width="match_parent"
@@ -33,13 +21,34 @@
         android:paddingBottom="39dp"
         app:boxBackgroundMode="outline"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        app:layout_constraintBottom_toTopOf="@id/passwordInputLayout"
+        app:layout_constraintVertical_chainStyle="packed">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/linkInput"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:hint="Enter host address"
+            android:textSize="18sp"
+            android:singleLine="true" />
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/passwordInputLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="24dp"
+        android:paddingBottom="39dp"
+        app:boxBackgroundMode="outline"
+        app:layout_constraintTop_toBottomOf="@+id/ipInput"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintVertical_chainStyle="packed">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/passwordInput"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:hint="Enter password"
             android:textSize="18sp"
             android:singleLine="true" />
     </com.google.android.material.textfield.TextInputLayout>

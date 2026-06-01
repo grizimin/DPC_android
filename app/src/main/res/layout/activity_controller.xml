@@ -17,28 +17,33 @@
         app:layout_constraintEnd_toEndOf="parent" />
 
 
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonLeft"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:text="Left"
+        android:layout_margin="8dp"
+        app:cornerRadius="32dp"
+        android:elevation="8dp"
+        app:rippleColor="#FFFFFF"
         app:layout_constraintTop_toBottomOf="@id/topToolbar"
         app:layout_constraintBottom_toTopOf="@id/bottomButtons"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/buttonRight"
-        app:layout_constraintWidth_percent="0.5"/>
+        app:layout_constraintEnd_toStartOf="@id/buttonRight" />
 
-    <!-- Right big button -->
-    <Button
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/buttonRight"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:text="Right"
+        android:layout_margin="8dp"
+        app:cornerRadius="32dp"
+        android:elevation="8dp"
+        app:rippleColor="#FFFFFF"
         app:layout_constraintTop_toBottomOf="@id/topToolbar"
         app:layout_constraintBottom_toTopOf="@id/bottomButtons"
         app:layout_constraintStart_toEndOf="@id/buttonLeft"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintWidth_percent="0.5"/>
+        app:layout_constraintEnd_toEndOf="parent" />
 
     <LinearLayout
         android:id="@+id/bottomButtons"
@@ -51,21 +56,21 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/button1"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="1"/>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/button2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="2"/>
 
-        <Button
+        <com.google.android.material.button.MaterialButton
             android:id="@+id/button3"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
