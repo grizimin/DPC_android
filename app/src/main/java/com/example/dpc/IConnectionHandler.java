@@ -7,4 +7,5 @@ public interface IConnectionHandler {
     public void button2();
     public void button3();
     public void disconnect();
+    public void setListener(IConnectionListener listener);
 }

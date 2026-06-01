@@ -45,6 +45,7 @@ public class MainActivity extends AppCompatActivity {
                 int id = group.getCheckedRadioButtonId();
                 Intent intent = null;
                 if (id == R.id.option1) {
+                    intent = new Intent(MainActivity.this, RemoteHostConnectionActivity.class);
                 }
                 else if (id == R.id.option2) {
                     intent = new Intent(MainActivity.this, LocalHostConnectionActivity.class);

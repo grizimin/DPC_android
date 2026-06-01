@@ -17,8 +17,7 @@ public class LocalHostHandler implements IConnectionHandler {
     private IConnectionListener listener = null;
     private final Handler mainHandler = new Handler(Looper.getMainLooper());
     private final Handler timeoutHandler = new Handler(Looper.getMainLooper());
-    LocalHostHandler(URI uri, String password, IConnectionListener listener) {
-        this.listener = listener;
+    LocalHostHandler(URI uri, String password) {
         webSocketClient = new WebSocketClient(uri) {
             @Override
             public void onOpen(ServerHandshake serverHandshake) {
@@ -55,6 +54,10 @@ public class LocalHostHandler implements IConnectionHandler {
 
         webSocketClient.connect();
         timeoutHandler.postDelayed(timeoutRunnable, CONNECTION_TIMEOUT_MS);
+    }
+
+    public void setListener(IConnectionListener listener) {
+        this.listener = listener;
     }
 
     private final Runnable timeoutRunnable = () -> {

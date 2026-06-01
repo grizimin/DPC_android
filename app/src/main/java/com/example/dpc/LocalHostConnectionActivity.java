@@ -36,6 +36,8 @@ public class LocalHostConnectionActivity extends AppCompatActivity {
 
     private boolean isConnecting = false;
     private WebSocketService service;
+    private URI uri;
+    private String password;
 
     private final ServiceConnection connection = new ServiceConnection() {
         @Override
@@ -44,6 +46,7 @@ public class LocalHostConnectionActivity extends AppCompatActivity {
                     (WebSocketService.LocalBinder) binder;
 
             service = b.getService();
+            service.setHandler(new LocalHostHandler(uri, password));
         }
 
         @Override
@@ -68,9 +71,7 @@ public class LocalHostConnectionActivity extends AppCompatActivity {
         }
 
         FloatingActionButton nextFab = (FloatingActionButton) findViewById(R.id.nextFab);
-        TextInputLayout ipInput = (TextInputLayout) findViewById(R.id.ipInput);
         TextInputEditText linkInput = (TextInputEditText) findViewById(R.id.linkInput);
-        TextInputLayout passwordInputLayout = (TextInputLayout) findViewById(R.id.passwordInputLayout);
         TextInputEditText passwordInput = (TextInputEditText) findViewById(R.id.passwordInput);
 
         nextFab.setOnClickListener(new View.OnClickListener(){
@@ -82,9 +83,8 @@ public class LocalHostConnectionActivity extends AppCompatActivity {
                 }
                 isConnecting = true;
                 String ip = String.valueOf(linkInput.getText());
-                String password = String.valueOf(passwordInput.getText());
+                password = String.valueOf(passwordInput.getText());
 
-                URI uri;
                 try {
                     uri = new URI("ws://" + ip);
                 }
@@ -95,8 +95,6 @@ public class LocalHostConnectionActivity extends AppCompatActivity {
                 }
 
                 Intent service_intent = new Intent(LocalHostConnectionActivity.this, WebSocketService.class);
-                service_intent.putExtra("uri", uri.toString());
-                service_intent.putExtra("password", password);
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                     startForegroundService(service_intent);
                 }
@@ -104,38 +102,11 @@ public class LocalHostConnectionActivity extends AppCompatActivity {
                     startService(service_intent);
                 }
 
+                bindService(service_intent, connection, BIND_AUTO_CREATE);
+
                 isConnecting = false;
                 Intent intent = new Intent(LocalHostConnectionActivity.this, ControllerActivity.class);
                 startActivity(intent);
-                /*
-                dpc.globalHandler = new LocalHostHandler(uri, new IConnectionListener() {
-                    @Override
-                    public void onConnected() {
-                        isConnecting = false;
-                        startActivity(intent);
-                    }
-
-                    @Override
-                    public void onConnectionError() {
-                        isConnecting = false;
-                        Toast.makeText(LocalHostConnectionActivity.this, "Connection Failed", Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onDisconnected() {
-                        isConnecting = false;
-                        Toast.makeText(LocalHostConnectionActivity.this, "Disconnected", Toast.LENGTH_SHORT).show();
-                        Intent intent = new Intent(LocalHostConnectionActivity.this, MainActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                    }
-                    public void onTimeout() {
-                        isConnecting = false;
-                        Toast.makeText(LocalHostConnectionActivity.this, "Connection Timed Out", Toast.LENGTH_SHORT).show();
-                    }
-                });
-
-                 */
             }
         });
 

@@ -43,25 +43,26 @@ public class WebSocketService extends Service {
         String uriString = intent.getStringExtra("uri");
         String passwordString = intent.getStringExtra("password");
         if (uriString != null) {
-            connect(uriString, passwordString);
+            connect();
         }
         return START_NOT_STICKY;
     }
 
-    private void connect(String uriString, String passwordString) {
-        try {
-            URI uri = new URI(uriString);
+    public void setHandler(IConnectionHandler handler) {
+        this.handler = handler;
+        handler.setListener(new ServiceConnectionListener());
+    }
 
-            handler = new LocalHostHandler(uri, passwordString, new ServiceConnectionListener());
-
+    private void connect() {
+        if (handler != null) {
             updateNotification("Connected");
-
-        } catch (Exception e) {
+        }
+        else {
             updateNotification("Connection failed");
         }
     }
 
-    private class ServiceConnectionListener implements IConnectionListener {
+    public class ServiceConnectionListener implements IConnectionListener {
         @Override
         public void onConnected() {
             updateNotification("Connected");
