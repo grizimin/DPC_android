@@ -1,6 +1,11 @@
 package com.example.dpc;
 
+import android.content.ComponentName;
+import android.content.Intent;
+import android.content.ServiceConnection;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
@@ -20,6 +25,25 @@ import java.net.URISyntaxException;
 
 public class RemoteHostConnectionActivity extends AppCompatActivity {
 
+    private URI uri;
+    private String session;
+    private WebSocketService service;
+    private final ServiceConnection connection = new ServiceConnection() {
+        @Override
+        public void onServiceConnected(ComponentName name, IBinder binder) {
+            WebSocketService.LocalBinder b =
+                    (WebSocketService.LocalBinder) binder;
+
+            service = b.getService();
+            service.setHandler(new RemoteHostHandler(uri, session));
+        }
+
+        @Override
+        public void onServiceDisconnected(ComponentName name) {
+            service = null;
+        }
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -37,15 +61,14 @@ public class RemoteHostConnectionActivity extends AppCompatActivity {
 
         FloatingActionButton nextFab = (FloatingActionButton) findViewById(R.id.nextFab);
         TextInputEditText hostInput = (TextInputEditText) findViewById(R.id.hostInput);
-        TextInputEditText sessionInput = (TextInputEditText) findViewById(R.id.sessionInputLayout);
+        TextInputEditText sessionInput = (TextInputEditText) findViewById(R.id.sessionInput);
 
         nextFab.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View view) {
                 String host = String.valueOf(hostInput.getText());
-                String session = String.valueOf(sessionInput.getText());
+                session = String.valueOf(sessionInput.getText());
 
-                URI uri;
                 try {
                     uri = new URI("ws://" + host);
                 }
@@ -55,6 +78,19 @@ public class RemoteHostConnectionActivity extends AppCompatActivity {
                     return;
                 }
 
+
+                Intent service_intent = new Intent(RemoteHostConnectionActivity.this, WebSocketService.class);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                    startForegroundService(service_intent);
+                }
+                else {
+                    startService(service_intent);
+                }
+
+                bindService(service_intent, connection, BIND_AUTO_CREATE);
+
+                Intent intent = new Intent(RemoteHostConnectionActivity.this, ControllerActivity.class);
+                startActivity(intent);
             }
         });
 

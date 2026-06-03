@@ -10,96 +10,97 @@ import org.java_websocket.handshake.ServerHandshake;
 import java.net.URI;
 
 public class RemoteHostHandler implements IConnectionHandler {
-
     private static final long CONNECTION_TIMEOUT_MS = 5000;
 
-    private WebSocketClient webSocketClient;
-    private final Handler mainHandler = new Handler(Looper.getMainLooper());
-    private final Handler timeoutHandler = new Handler(Looper.getMainLooper());
-
-    private final IConnectionListener listener;
-    private final String password;
+    private final WebSocketClient webSocketClient;
 
     private boolean isConnected = false;
     private boolean hasTimedOut = false;
-    private boolean sessionCreated = false;
 
-    private String sessionId;
+    private IConnectionListener listener = null;
 
-    public RemoteHostHandler(URI uri, String password, IConnectionListener listener) {
-        this.listener = listener;
-        this.password = password;
-
+    private final Handler mainHandler = new Handler(Looper.getMainLooper());
+    private final Handler timeoutHandler = new Handler(Looper.getMainLooper());
+    private final Runnable timeoutRunnable;
+    public RemoteHostHandler(URI uri, String sessionId) {
         webSocketClient = new WebSocketClient(uri) {
 
             @Override
-            public void onOpen(ServerHandshake handshakedata) {
-                if (hasTimedOut) return;
+            public void onOpen(ServerHandshake handshake) {
+                if (hasTimedOut) {
+                    return;
+                }
 
-                Log.i("RemoteHostHandler", "WebSocket opened");
-
-                // Step 1: authenticate
-                send("AUTH " + password);
-
-                // Step 2: create session after auth
-                send("CREATE");
+                webSocketClient.send("JOIN " + sessionId);
             }
 
             @Override
             public void onMessage(String message) {
                 Log.i("RemoteHostHandler", "Received: " + message);
 
-                if (message.startsWith("OK")) {
+                if ("OK".equals(message)) {
                     isConnected = true;
+
                     timeoutHandler.removeCallbacks(timeoutRunnable);
 
-                    mainHandler.post(listener::onConnected);
-                }
-
-                // Expected: SESSION ABC123
-                else if (message.startsWith("SESSION ")) {
-                    sessionId = message.substring(8).trim();
-                    sessionCreated = true;
-
-                    Log.i("RemoteHostHandler", "Session created: " + sessionId);
+                    if (listener != null) {
+                        mainHandler.post(listener::onConnected);
+                    }
                 }
             }
 
             @Override
             public void onClose(int code, String reason, boolean remote) {
+                if (!isConnected) {
+                    return;
+                }
+
                 isConnected = false;
+
                 Log.i("RemoteHostHandler", "Closed: " + reason);
-                mainHandler.post(listener::onDisconnected);
+
+                if (listener != null) {
+                    mainHandler.post(listener::onDisconnected);
+                }
             }
 
             @Override
             public void onError(Exception ex) {
-                Log.e("RemoteHostHandler", "Error: " + ex.getMessage());
+                Log.e("RemoteHostHandler", "Error", ex);
 
                 timeoutHandler.removeCallbacks(timeoutRunnable);
-                mainHandler.post(listener::onConnectionError);
+
+                if (listener != null) {
+                    mainHandler.post(listener::onConnectionError);
+                }
             }
         };
 
         webSocketClient.connect();
+        timeoutRunnable = () -> {
+            if (!isConnected) {
+                hasTimedOut = true;
+
+                try {
+                    webSocketClient.close();
+                } catch (Exception ignored) {
+                }
+
+                if (listener != null) {
+                    mainHandler.post(listener::onTimeout);
+                }
+            }
+        };
         timeoutHandler.postDelayed(timeoutRunnable, CONNECTION_TIMEOUT_MS);
     }
 
-    private final Runnable timeoutRunnable = () -> {
-        if (!isConnected && !sessionCreated) {
-            hasTimedOut = true;
+    public void setListener(IConnectionListener listener) {
+        this.listener = listener;
+    }
 
-            try {
-                webSocketClient.close();
-            } catch (Exception ignored) {}
-
-            //mainHandler.post(listener::onTimeout);
-        }
-    };
-
-    private void sendMessage(String msg) {
+    private void sendMessage(String message) {
         if (isConnected) {
-            webSocketClient.send(msg);
+            webSocketClient.send(message);
         }
     }
 
@@ -133,20 +134,7 @@ public class RemoteHostHandler implements IConnectionHandler {
         try {
             webSocketClient.close();
         } catch (Exception e) {
-            Log.e("RemoteHostHandler", "Disconnect failed");
+            Log.e("RemoteHostHandler", "Disconnect failed", e);
         }
-    }
-
-    @Override
-    public void setListener(IConnectionListener listener) {
-
-    }
-
-    public String getSessionId() {
-        return sessionId;
-    }
-
-    public boolean isSessionReady() {
-        return sessionCreated;
     }
 }
