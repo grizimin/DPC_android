@@ -13,7 +13,7 @@
         android:layout_gravity="center_horizontal"
         android:layout_marginTop="120dp"
         android:autoSizeTextType="uniform"
-        android:text="Welcome to DPC"
+        android:text="@string/main_greeting"
         android:textAlignment="center"
         android:textSize="48sp"
         android:paddingLeft="30dp"
@@ -27,7 +27,7 @@
         android:layout_marginTop="250dp"
         android:paddingLeft="30dp"
         android:paddingRight="30dp"
-        android:text="Select the way you want to connect to host"
+        android:text="@string/main_description"
         android:textSize="20sp" />
 
     <RadioGroup
@@ -42,14 +42,14 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:checked="false"
-            android:text="Connection via remote host"
+            android:text="@string/main_option_1"
             android:textSize="20sp" />
 
         <RadioButton
             android:id="@+id/option2"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Direct connection, host must be static"
+            android:text="@string/main_option_2"
             android:textSize="20sp" />
     </RadioGroup>
 

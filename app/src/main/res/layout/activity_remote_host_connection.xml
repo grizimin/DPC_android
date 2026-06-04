@@ -28,9 +28,9 @@
             android:id="@+id/hostInput"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:hint="Enter remote server address"
+            android:hint="@string/enter_remote_server_address"
             android:singleLine="true"
-            android:text="grizimin.space"
+            android:text="@string/default_remote_server"
             android:textSize="18sp" />
     </com.google.android.material.textfield.TextInputLayout>
 
@@ -49,7 +49,7 @@
             android:id="@+id/sessionInput"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:hint="Enter session id"
+            android:hint="@string/enter_session_id"
             android:textSize="18sp"
             android:singleLine="true" />
     </com.google.android.material.textfield.TextInputLayout>

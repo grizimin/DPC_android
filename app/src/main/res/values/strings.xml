@@ -1,4 +1,18 @@
 <resources>
     <string name="app_name">DPC</string>
+    <string name="enter_remote_server_address">Enter remote server address</string>
+    <string name="default_remote_server">dpc.grizimin.space</string>
+    <string name="enter_session_id">Enter session id</string>
+    <string name="main_description">Select the way you want to connect to host</string>
+    <string name="main_option_1">Connection via remote host</string>
+    <string name="main_option_2">Direct connection, host must be static</string>
+    <string name="main_greeting">Welcome to DPC</string>
+    <string name="local_host_hint">Enter host address</string>
+    <string name="local_password_hint">Enter password</string>
+    <string name="left">Left</string>
+    <string name="right">Right</string>
+    <string name="_1">1</string>
+    <string name="_2">2</string>
+    <string name="_3">3</string>
 
 </resources>

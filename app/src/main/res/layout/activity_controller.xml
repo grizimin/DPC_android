@@ -21,7 +21,7 @@
         android:id="@+id/buttonLeft"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:text="Left"
+        android:text="@string/left"
         android:layout_margin="8dp"
         app:cornerRadius="32dp"
         android:elevation="8dp"
@@ -35,7 +35,7 @@
         android:id="@+id/buttonRight"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:text="Right"
+        android:text="@string/right"
         android:layout_margin="8dp"
         app:cornerRadius="32dp"
         android:elevation="8dp"
@@ -61,20 +61,20 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="1"/>
+            android:text="@string/_1"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button2"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="2"/>
+            android:text="@string/_2"/>
 
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button3"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:text="3"/>
+            android:text="@string/_3"/>
     </LinearLayout>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -28,7 +28,7 @@
             android:id="@+id/linkInput"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:hint="Enter host address"
+            android:hint="@string/local_host_hint"
             android:textSize="18sp"
             android:singleLine="true" />
     </com.google.android.material.textfield.TextInputLayout>
@@ -48,7 +48,7 @@
             android:id="@+id/passwordInput"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:hint="Enter password"
+            android:hint="@string/local_password_hint"
             android:textSize="18sp"
             android:singleLine="true" />
     </com.google.android.material.textfield.TextInputLayout>
